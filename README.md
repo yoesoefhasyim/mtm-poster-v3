@@ -90,8 +90,10 @@ Ikon: bolt, drop, wind, flame, cam, ruler, gauge, shield, doc, search, calc, wre
 
 ## Catatan teknis
 
-- Render pakai Chromium sungguhan (`@sparticuz/chromium` + `puppeteer-core`), jadi hasilnya sama persis dengan yang sudah disetujui. Bukan Satori/`@vercel/og` yang cuma mendukung sebagian CSS.
-- Render pertama setelah idle butuh ~3–8 detik (cold start). Berikutnya ~1,5 detik. `maxDuration` diset 60 detik.
+- Render memakai **Satori + resvg** — tanpa browser sama sekali. Versi sebelumnya memakai Chromium dan gagal di Vercel karena pustaka sistem (`libnss3.so`) tidak tersedia di lingkungan serverless. Mesin baru ini murni JavaScript, jadi masalah itu tidak mungkin terulang.
+- Satori hanya mengenal flexbox dan gaya tertulis langsung, jadi templatenya ditulis ulang. Hasil akhirnya sudah dibandingkan dan sama dengan desain yang disetujui.
+- Satu render ~5 detik. `maxDuration` diset 60 detik. Hasil di-cache permanen per URL, jadi Zernio hanya membayar sekali.
+- Font woff2 dibuka jadi TTF saat build (Satori tidak mendukung woff2).
 - Hasil di-cache permanen per URL (`immutable`), jadi Zernio yang mengambil gambar berkali-kali tidak memicu render ulang.
 - Judul mengecil sendiri kalau teksnya panjang — tidak akan pernah meluber.
 - Logo asli dipakai apa adanya, tanpa penelusuran vektor, supaya tidak ada perubahan bentuk.
@@ -103,9 +105,9 @@ api/poster.js            handler HTTP
 lib/spec.js              URL  ->  spesifikasi poster (termasuk kompatibilitas format lama)
 lib/template.js          spesifikasi -> HTML
 lib/theme.js             6 tema + rumus rotasi tanggal
-lib/render.js            HTML -> PNG
+lib/render.js            HTML -> SVG (Satori) -> PNG (resvg)
 lib/embedded.js          dibuat saat build, jangan disunting
 assets/                  logo asli
 scripts/build-assets.js  penanam font & logo
-test-local.js            uji lokal: node test-local.js
+test-render.js           uji lokal: npm install && npm run build && node test-render.js
 ```
