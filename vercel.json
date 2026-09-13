@@ -1,1 +1,4 @@
-{ "functions": { "api/poster.js": { "maxDuration": 60 } } }
+{
+  "functions": { "api/poster.js": { "maxDuration": 60 } },
+  "outputDirectory": "public"
+}
