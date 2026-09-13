@@ -1,0 +1,14 @@
+{
+  "name": "mtm-poster-v3",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Endpoint poster MERU Teknik Mandiri — desain modular, 6 tema berotasi",
+  "scripts": { "build": "node scripts/build-assets.js" },
+  "dependencies": {
+    "@fontsource/barlow-condensed": "^5.1.0",
+    "@fontsource/plus-jakarta-sans": "^5.1.0",
+    "@sparticuz/chromium": "^131.0.0",
+    "puppeteer-core": "^23.10.4"
+  },
+  "engines": { "node": "20.x" }
+}
