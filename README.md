@@ -94,6 +94,17 @@ Ikon: bolt, drop, wind, flame, cam, ruler, gauge, shield, doc, search, calc, wre
 - Satori hanya mengenal flexbox dan gaya tertulis langsung, jadi templatenya ditulis ulang. Hasil akhirnya sudah dibandingkan dan sama dengan desain yang disetujui.
 - Satu render ~5 detik. `maxDuration` diset 60 detik. Hasil di-cache permanen per URL, jadi Zernio hanya membayar sekali.
 - Font woff2 dibuka jadi TTF saat build (Satori tidak mendukung woff2).
+- **Penting — soal berkas .wasm.** Satori memakai `harfbuzzjs`, yang membaca
+  `hb.wasm` dari disk saat berjalan. Penelusuran berkas otomatis Vercel tidak
+  menyertakan berkas `.wasm`, sehingga fungsi mati dengan `ENOENT`.
+  Dua lapis penanganan sudah dipasang:
+  1. `scripts/build-assets.js` menambal `node_modules/harfbuzzjs/index.js` saat
+     build, menanam isi `hb.wasm` sebagai base64 ke dalamnya. Saat berjalan
+     tidak ada pembacaan berkas sama sekali. **Ini pengaman utamanya.**
+  2. `vercel.json` tetap memuat `"includeFiles": "node_modules/**/*.wasm"`
+     sebagai cadangan. Jangan dihapus.
+  Sudah diuji dengan menghapus SELURUH berkas `.wasm` dari disk — endpoint tetap
+  menghasilkan PNG. Cek lewat `/api/poster?debug=1`, lihat bagian `harfbuzz`.
 - Hasil di-cache permanen per URL (`immutable`), jadi Zernio yang mengambil gambar berkali-kali tidak memicu render ulang.
 - Judul mengecil sendiri kalau teksnya panjang — tidak akan pernah meluber.
 - Logo asli dipakai apa adanya, tanpa penelusuran vektor, supaya tidak ada perubahan bentuk.

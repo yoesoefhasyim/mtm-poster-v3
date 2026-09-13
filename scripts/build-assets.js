@@ -40,6 +40,32 @@ const SEAL_SHA='99204a948171f9923f8e0c6bb932cf5709aab0c90b519acd71c1409dee64cfe5
   const wasm = fs.readFileSync(require.resolve('@resvg/resvg-wasm/index_bg.wasm'));
   console.log('resvg wasm ->', Math.round(wasm.length/1024)+'KB');
 
+  // ── Tambal harfbuzzjs ────────────────────────────────────────────────
+  // Satori memakai harfbuzzjs, yang membaca hb.wasm dari disk saat berjalan.
+  // Penelusuran berkas Vercel tidak menyertakan .wasm, jadi fungsi mati ENOENT.
+  // Di sini wasm-nya ditanam langsung ke dalam index.js paket itu, sehingga
+  // saat berjalan tidak ada pembacaan berkas sama sekali.
+  try {
+    const hbDir = path.dirname(require.resolve('harfbuzzjs/index.js'));
+    const hbIndex = path.join(hbDir,'index.js');
+    const hbWasm  = path.join(hbDir,'hb.wasm');
+    const cur = fs.readFileSync(hbIndex,'utf8');
+    if (cur.includes('__WASM_DITANAM__')) { console.log('harfbuzz: sudah ditambal.'); }
+    else {
+      const b64 = fs.readFileSync(hbWasm).toString('base64');
+      const patched =
+        "// __WASM_DITANAM__ oleh mtm-poster build\n" +
+        "var hbjs = require('./hbjs.js');\n" +
+        "var hb = require('./hb.js');\n" +
+        "var __wasm = Buffer.from('"+b64+"','base64');\n" +
+        "module.exports = new Promise(function (resolve, reject) {\n" +
+        "  hb({ wasmBinary: __wasm }).then(function (instance) { resolve(hbjs(instance)); }, reject);\n" +
+        "});\n";
+      fs.writeFileSync(hbIndex, patched);
+      console.log('harfbuzz: hb.wasm ditanam ('+Math.round(b64.length/1024)+'KB base64).');
+    }
+  } catch (e) { console.error('PERINGATAN: gagal menambal harfbuzzjs -', e.message); }
+
   const js='// Dibuat otomatis oleh scripts/build-assets.js — jangan disunting tangan.\n'+
     "const B=s=>Buffer.from(s,'base64');\nmodule.exports={\n"+
     `  SEAL: '${SEAL}',\n  WASM: B('${wasm.toString('base64')}'),\n`+out.join(',\n')+'\n};\n';
