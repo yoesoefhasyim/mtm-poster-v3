@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/poster.js": {
-      "maxDuration": 60,
-      "includeFiles": "node_modules/@resvg/**"
-    }
-  },
+  "functions": { "api/poster.js": { "maxDuration": 60 } },
   "outputDirectory": "public"
 }

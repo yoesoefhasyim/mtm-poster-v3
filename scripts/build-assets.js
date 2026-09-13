@@ -36,9 +36,13 @@ const SEAL_SHA='99204a948171f9923f8e0c6bb932cf5709aab0c90b519acd71c1409dee64cfe5
     out.push(`  ${key}: B('${ttf.toString('base64')}')`);
     console.log('Font',key,'->',Math.round(ttf.length/1024)+'KB TTF');
   }
+  // resvg versi WebAssembly ditanam juga -> saat jalan tidak menyentuh filesystem sama sekali
+  const wasm = fs.readFileSync(require.resolve('@resvg/resvg-wasm/index_bg.wasm'));
+  console.log('resvg wasm ->', Math.round(wasm.length/1024)+'KB');
+
   const js='// Dibuat otomatis oleh scripts/build-assets.js — jangan disunting tangan.\n'+
     "const B=s=>Buffer.from(s,'base64');\nmodule.exports={\n"+
-    `  SEAL: '${SEAL}',\n`+out.join(',\n')+'\n};\n';
+    `  SEAL: '${SEAL}',\n  WASM: B('${wasm.toString('base64')}'),\n`+out.join(',\n')+'\n};\n';
   fs.writeFileSync(path.join(root,'lib','embedded.js'),js);
   console.log('embedded.js dibuat:',Math.round(js.length/1024)+'KB');
 })().catch(e=>{ console.error(e.message); process.exit(1); });

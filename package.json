@@ -1,19 +1,20 @@
 {
   "name": "mtm-poster-v3",
-  "version": "3.1.0",
+  "version": "3.3.0",
   "private": true,
-  "description": "Endpoint poster MERU Teknik Mandiri — render tanpa browser (Satori + resvg)",
-  "scripts": { "build": "node scripts/build-assets.js" },
+  "description": "Endpoint poster MERU Teknik Mandiri — render tanpa browser, tanpa berkas biner platform",
+  "scripts": {
+    "build": "node scripts/build-assets.js"
+  },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.3.0",
     "@fontsource/plus-jakarta-sans": "^5.3.0",
-    "@resvg/resvg-js": "^2.6.2",
+    "@resvg/resvg-wasm": "^2.6.2",
     "satori": "^0.33.4",
     "satori-html": "^0.3.2",
     "wawoff2": "^2.0.1"
   },
-  "optionalDependencies": {
-    "@resvg/resvg-js-linux-x64-gnu": "^2.6.2"
-  },
-  "engines": { "node": "22.x" }
+  "engines": {
+    "node": "22.x"
+  }
 }
